@@ -5,6 +5,7 @@ from turtlesim.msg import Pose
 from geometry_msgs.msg import Twist
 from turtlesim.srv import SetPen
 from functools import partial
+import math
 
 class TurtleControllerNode(Node):
     def __init__(self):
@@ -16,9 +17,16 @@ class TurtleControllerNode(Node):
 
     def pose_callback(self, pose: Pose):
         cmd = Twist()
-        if pose.x > 9.5 or pose.x < 1.5 or pose.y < 1.5 or pose.y > 9.5 :
-            cmd.linear.x = 1.0
+        if pose.x > 9.5 or pose.y > 9.5 :
+            cmd.linear.x = 0.0
             cmd.angular.z = 1.0
+            print(pose.theta)
+            if round(pose.theta, 2) == round(math.pi, 2):
+                cmd.angular.z = 0.0
+                cmd.linear.x = 1.0
+        elif pose.x < 1.5 or pose.y < 1.5:
+            cmd.linear.x = 1.0
+            cmd.angular.z = -1.0
         else:
             cmd.linear.x = 5.0
             cmd.angular.z = 0.0  
@@ -35,7 +43,7 @@ class TurtleControllerNode(Node):
         client = self.create_client(srv_type=SetPen, srv_name="/turtle1/set_pen")
         while not client.wait_for_service(1.0):
             self.get_logger().warn("Waiting for service....")
-
+            
         request = SetPen.Request()            
         request.r = r
         request.g = g
