@@ -38,7 +38,7 @@ class ChasingNode(Node):
             cmd.linear.x = 0.0
             cmd.angular.z = 2.0
         else:
-            cmd.linear.x = 6.0
+            cmd.linear.x = 45.0
             cmd.angular.z = 0.0
         self.cmd_vel_publisher_.publish(cmd)
 
